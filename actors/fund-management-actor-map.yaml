@@ -1,0 +1,60 @@
+project: etzhayyim-project-fm
+objective: Build fund-management domain actors from APQC + ISCO + ISIC assets
+actor_sets:
+  apqc:
+    - id: apqc-9-0-financial-management
+      source_project: etzhayyim-project-apqc
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-svc-apqc-9-0-financial-management-cvaeukqn
+      business_role: Core finance orchestration
+      mcp_access: direct
+    - id: apqc-9-1-2-cost-accounting
+      source_project: etzhayyim-project-apqc
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-svc-apqc-9-1-2-cost-accounting-hs5myyk4
+      business_role: NAV and cost basis calculation inputs
+      mcp_access: adapter-required
+    - id: apqc-9-4-accounts-receivable
+      source_project: etzhayyim-project-apqc
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-svc-apqc-9-4-accounts-receivable-sq8qt88a
+      business_role: Subscription cashflow collection
+      mcp_access: adapter-required
+  isco:
+    - id: isco-1211-treasury-manager
+      source_project: etzhayyim-project-open-isco
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-psn-isco-1211-treasury-manager-7df4q796
+      business_role: Liquidity and settlement decision owner
+      mcp_access: direct
+    - id: isco-2412-financial-and-investment-advisers
+      source_project: etzhayyim-project-open-isco
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-psn-isco-2412-financial-and-investment-advisers-hhddguqm
+      business_role: Client suitability and recommendation governance
+      mcp_access: direct
+    - id: isco-2412-investment-analyst
+      source_project: etzhayyim-project-open-isco
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-psn-isco-2412-investment-analyst-vccbzmvf
+      business_role: Risk/return scoring and watchlist updates
+      mcp_access: direct
+  isic:
+    - id: isic-6430-trusts-funds
+      source_project: etzhayyim-project-open-isic
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-org-isic-k-64-643-6430-qkt6zyvr
+      business_role: Legal entity constraints for trust/fund vehicles
+      mcp_access: direct
+    - id: isic-6431-mutual-funds
+      source_project: etzhayyim-project-open-isic
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-org-isic-k-64-643-6431-sfmtdkzd
+      business_role: Mutual fund specific process and disclosures
+      mcp_access: direct
+    - id: isic-6530-pension-funding
+      source_project: etzhayyim-project-open-isic
+      source_actor: etzhayyim-performer-sys-etzhayyim-actors-pba7d22f-org-isic-k-65-653-6530-rveryau2
+      business_role: Pension product operational constraints
+      mcp_access: direct
+integration_contract:
+  orchestration_actor: etzhayyim-project-ma/fund-management-ma-orchestrator
+  adapter_actor: etzhayyim-project-ma/fund-management-ma-apqc-mcp-adapter
+  event_bus_topics:
+    - fm.subscription.requested
+    - fm.trade.proposed
+    - fm.risk.checked
+    - fm.nav.calculated
+    - fm.disclosure.published
