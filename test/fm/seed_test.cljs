@@ -79,8 +79,37 @@
                       {:got items :floor floor})))
     (set items)))
 
+(defn- counts-under
+  "`bullets-under` と同じ箇条書きから `` `name` — N 件 `` の N を読む。
+   README が書いた件数と seed が実際に書く件数を突き合わせるためのもの。
+
+   件数を README に書く以上、それは検査されなければならない —— 検査の無い
+   数字は、測ったように見えて黙って古くなる。読めた件数が `floor` に満たなければ
+   **読めなかった**ということなので throw する（0 件どうしの比較は常に真になる）。"
+  [heading floor]
+  (let [lines (str/split-lines (slurp* "README.md"))
+        after (drop-while #(not (str/includes? % heading)) lines)
+        _ (when (empty? after)
+            (throw (ex-info (str "README.md に見出しが無い: " heading
+                                 "。件数を読めていないので合格を報告しない。") {})))
+        pairs (->> (rest after)
+                   (take-while #(str/starts-with? % "  - "))
+                   (keep (fn [l]
+                           (let [n (second (re-find #"`([^`]+)`" l))
+                                 c (second (re-find #"—\s*(\d+)\s*件" l))]
+                             (when (and n c) [n (js/parseInt c 10)]))))
+                   vec)]
+    (when (< (count pairs) floor)
+      (throw (ex-info (str "README.md の『" heading "』から件数を " (count pairs)
+                           " 件しか読めなかった（床 " floor "）。"
+                           "『`名前` — N 件』の形が崩れている。合格を報告しない。")
+                      {:got pairs :floor floor})))
+    (into {} pairs)))
+
 (def promised-domains     (delay (bullets-under "Public domains covered by this seed:" 6)))
 (def promised-collections (delay (bullets-under "Seeded collections:" 6)))
+(def promised-domain-counts     (delay (counts-under "Public domains covered by this seed:" 6)))
+(def promised-collection-counts (delay (counts-under "Seeded collections:" 6)))
 
 ;; ── seed が実際に書くもの ──────────────────────────────────────────────────
 (defn- by-collection [] (group-by :collection (cap/records)))
@@ -129,6 +158,36 @@
       (is (empty? missing)
           (str "README が覆うと言ったのに seed が 1 件も作らないドメイン: "
                (pr-str (sort missing)) " / 実際に作られた: " (pr-str (sort kinds)))))))
+
+(deftest the-counts-the-readme-prints-are-the-counts-the-seed-writes
+  (testing "README の『— N 件』が seed の実測と一致する"
+    ;; README は 12 個の数字を実測として印字している。数字は散文と違って
+    ;; 「だいたい合っている」が無い —— seed が 1 件増えた日に README だけが
+    ;; 古くなり、しかも**それを読んだ人には測ったように見える**。
+    ;; 名前の一致（上の 2 検査）は件数のずれを一切捕まえないので、別に見る。
+    (let [written-colls (into {} (map (fn [[k v]] [k (count v)]) (by-collection)))
+          bad-colls (into {} (keep (fn [[nm n]]
+                                     (let [actual (get written-colls nm 0)]
+                                       (when-not (= n actual) [nm {:readme n :actual actual}])))
+                                   @promised-collection-counts))
+          written-kinds (frequencies (field "fund" :fundKind))
+          bad-kinds (into {} (keep (fn [[nm n]]
+                                     (let [actual (get written-kinds nm 0)]
+                                       (when-not (= n actual) [nm {:readme n :actual actual}])))
+                                   @promised-domain-counts))]
+      (is (empty? bad-colls)
+          (str "README の collection 件数が seed と食い違う: " (pr-str bad-colls)))
+      (is (empty? bad-kinds)
+          (str "README の fundKind 件数が seed と食い違う: " (pr-str bad-kinds)))
+      ;; 合計も見る。個々が合っていて合計が違うことは無いが、README 本文の
+      ;; 「計 165 レコード」は別の場所に書かれた別の主張なので別に照合する。
+      (let [total (reduce + 0 (vals @promised-collection-counts))
+            stated (some-> (re-find #"計\s*(\d+)\s*レコード" (slurp* "README.md")) second
+                           (js/parseInt 10))]
+        (is (some? stated) "README.md に『計 N レコード』が無い。読めなかったので合格を報告しない。")
+        (is (= stated total (count (cap/records)))
+            (str "README 本文の合計 " stated " / 箇条書きの和 " total
+                 " / seed の実測 " (count (cap/records)) " が一致しない"))))))
 
 (deftest rkeys-are-unique-so-no-record-silently-overwrites-another
   (testing "putRecord は rkey での upsert —— 衝突は前のレコードを黙って消す"
