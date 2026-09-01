@@ -1,0 +1,53 @@
+#!/usr/bin/env nbb
+;; inspect_seed.cljs — `seed.ts` が PDS へ書こうとしているものを、
+;; **1 本もネットワークへ出さずに** 数える。
+;;
+;;   npx --yes nbb --classpath test inspect_seed.cljs
+;;
+;; なぜこれが要るか。`seed.ts` の唯一の実行方法は本番 PDS への 166 本の書き込み
+;; （`com.atproto.repo.putRecord` 165 + `com.etzhayyim.actor.create` 1）で、
+;; dry-run スイッチが無い。つまり operator が「何が書かれるのか」を知る手段は、
+;; **書いてから読む** しか無かった。それは live な PDS に対しては取り返しの
+;; つかない順序である。
+;;
+;; 捕獲器は test/fm/seed_capture.cljs をそのまま使う —— 検査が使っているものと
+;; 同じものを見せる。写しを作れば、写しの方だけが正しいまま実物が変わる。
+;;
+;; ## 数えられなかったときに 0 を報告しない
+;;
+;; seed_capture の `records` は捕獲本数が床を下回ると **throw する**。ここで
+;; その例外を握り潰して「0 件」と印字すると、seed が縮んだのか捕獲が壊れたのか
+;; 区別できない出力になる。だから catch は理由を出して **exit 1** で終わる。
+(ns inspect-seed
+  (:require [fm.seed-capture :as cap]))
+
+(defn- report [_]
+  (let [reqs  (cap/requests)
+        rs    (cap/records)
+        funds (filter #(= "com.etzhayyim.apps.fund.fund" (:collection %)) rs)
+        rkeys (into #{} (map :rkey rs))]
+    (println "\n=== seed.ts が書こうとしているもの（送信なし）===")
+    (println "要求 合計          :" (count reqs))
+    (println "  putRecord        :" (count rs))
+    (println "  actor.create     :" (count (remove :collection (map :body reqs))))
+    (println "\ncollection ごとの件数:")
+    (doseq [[c n] (sort (frequencies (map :collection rs)))]
+      (println (str "  " c "  " n)))
+    (println "\nfundKind ごとの件数（README が名乗る公開ドメイン）:")
+    (doseq [[k n] (sort (frequencies (map #(get-in % [:record :fundKind]) funds)))]
+      (println (str "  " k "  " n)))
+    ;; rkey は putRecord の upsert キー。重複は「静かな上書き」であって
+    ;; 失敗として観測されない —— 全部 200 が返り、前のレコードだけが消える。
+    (println "\nrkey 相異なり      :" (count rkeys) "/" (count rs)
+             (if (= (count rkeys) (count rs)) "(衝突なし)" "(⚠ 衝突あり = 静かな上書き)"))
+    (println "\n送信先ホスト:")
+    (doseq [u (sort (into #{} (map :url reqs)))] (println (str "  " u)))
+    (when-not (= (count rkeys) (count rs))
+      (js/process.exit 1))))
+
+(-> (cap/capture!)
+    (.then report)
+    (.catch (fn [e]
+              (println "\n数えられなかった。0 件として報告しない。")
+              (println (.-stack e))
+              (js/process.exit 1))))
