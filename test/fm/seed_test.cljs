@@ -34,7 +34,7 @@
 (ns fm.seed-test
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.set :as set]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [fm.seed-capture :as cap]
             ["fs" :as fs]
             ["path" :as path]
