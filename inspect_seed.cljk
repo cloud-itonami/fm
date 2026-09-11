@@ -1,8 +1,8 @@
-#!/usr/bin/env nbb
+#!/usr/bin/env kbb
 ;; inspect_seed.cljk — `seed.ts` が PDS へ書こうとしているものを、
 ;; **1 本もネットワークへ出さずに** 数える。
 ;;
-;;   npx --yes nbb --classpath test inspect_seed.cljk
+;;   npx --yes kbb --backend sci --classpath test inspect_seed.cljk
 ;;
 ;; なぜこれが要るか。`seed.ts` の唯一の実行方法は本番 PDS への 166 本の書き込み
 ;; （`com.atproto.repo.putRecord` 165 + `com.etzhayyim.actor.create` 1）で、
