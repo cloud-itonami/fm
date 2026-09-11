@@ -1,8 +1,8 @@
 #!/usr/bin/env nbb
-;; inspect_seed.cljs — `seed.ts` が PDS へ書こうとしているものを、
+;; inspect_seed.cljk — `seed.ts` が PDS へ書こうとしているものを、
 ;; **1 本もネットワークへ出さずに** 数える。
 ;;
-;;   npx --yes nbb --classpath test inspect_seed.cljs
+;;   npx --yes nbb --classpath test inspect_seed.cljk
 ;;
 ;; なぜこれが要るか。`seed.ts` の唯一の実行方法は本番 PDS への 166 本の書き込み
 ;; （`com.atproto.repo.putRecord` 165 + `com.etzhayyim.actor.create` 1）で、
@@ -10,7 +10,7 @@
 ;; **書いてから読む** しか無かった。それは live な PDS に対しては取り返しの
 ;; つかない順序である。
 ;;
-;; 捕獲器は test/fm/seed_capture.cljs をそのまま使う —— 検査が使っているものと
+;; 捕獲器は test/fm/seed_capture.cljk をそのまま使う —— 検査が使っているものと
 ;; 同じものを見せる。写しを作れば、写しの方だけが正しいまま実物が変わる。
 ;;
 ;; ## 数えられなかったときに 0 を報告しない

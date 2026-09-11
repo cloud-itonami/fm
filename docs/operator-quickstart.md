@@ -25,7 +25,7 @@
 ## 1. ✅ 検査を回す
 
 ```bash
-npx --yes nbb --classpath test run_tests.cljs
+npx --yes nbb --classpath test run_tests.cljk
 ```
 
 ```
@@ -41,7 +41,7 @@ fm seed + blueprint: all green
 ```
 
 冒頭 2 行は `seed.ts` 自身の `console.log` である。**PDS へは 1 本も出ていない**
-—— `test/fm/seed_capture.cljs` が `fetch` を捕獲器に差し替えてから import する。
+—— `test/fm/seed_capture.cljk` が `fetch` を捕獲器に差し替えてから import する。
 
 `fm seed + blueprint: all green` は全部緑のときだけ出る。緑でないときは
 `FAILED` を出して exit 1 で終わる。**この行が無い成功は無い**ので、CI から
@@ -50,7 +50,7 @@ fm seed + blueprint: all green
 ## 2. ✅ seed が書こうとしているものを、送信せずに数える
 
 ```bash
-npx --yes nbb --classpath test inspect_seed.cljs
+npx --yes nbb --classpath test inspect_seed.cljk
 ```
 
 ```
@@ -173,8 +173,8 @@ git -C <superproject>/orgs/etzhayyim/root \
 ```
 
 記録の `:tracked-files 5` と一致する。現在の tree は 10 ファイルで、増えた 5 つ
-（`README.edn` `migration.edn` `run_tests.cljs` `test/fm/seed_capture.cljs`
-`test/fm/seed_test.cljs`）はすべて抽出後にここで書かれたものである。
+（`README.edn` `migration.edn` `run_tests.cljk` `test/fm/seed_capture.cljk`
+`test/fm/seed_test.cljk`）はすべて抽出後にここで書かれたものである。
 
 ⚠ `git rev-parse --is-shallow-repository` が `true` を返す checkout では
 この照合を信用しないこと。shallow な clone は ancestry の問いに **誤った答えを、
@@ -185,7 +185,7 @@ git -C <superproject>/orgs/etzhayyim/root \
 
 ## この repo に無いもの
 
-`inspect_seed.cljs` が数えるのは **`seed.ts` が出す要求**であって、PDS の中身
+`inspect_seed.cljk` が数えるのは **`seed.ts` が出す要求**であって、PDS の中身
 ではない。seed 後に何が入ったかを確かめる読み取り側は、この repo に無い
 （§3 が踏めるようになるまで書きようがない）。README が案内していた
 `etzhayyim coverage world --domain …` がその役だったが、§3 のとおり CLI の

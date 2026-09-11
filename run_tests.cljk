@@ -1,7 +1,7 @@
 #!/usr/bin/env nbb
-;; run_tests.cljs — fm の検査。
+;; run_tests.cljk — fm の検査。
 ;;
-;;   nbb --classpath test run_tests.cljs
+;;   nbb --classpath test run_tests.cljk
 ;;
 ;; ネットワークには出ない。`seed.ts` は本物を走らせるが、`fetch` を捕獲器に
 ;; 差し替えてあるので PDS には 1 本も届かない（seed_capture.cljs を参照）。
