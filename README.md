@@ -17,8 +17,8 @@
 何が今日踏めて、何が踏めないかを実測付きで書いてある。
 
 ```bash
-npx --yes nbb --classpath test run_tests.cljk      # 検査
-npx --yes nbb --classpath test inspect_seed.cljk   # 送信せずに中身を数える
+npx --yes kbb --backend sci --classpath test run_tests.cljk      # 検査
+npx --yes kbb --backend sci --classpath test inspect_seed.cljk   # 送信せずに中身を数える
 ```
 
 ## 何を seed するか

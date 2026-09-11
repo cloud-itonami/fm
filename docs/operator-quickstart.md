@@ -25,7 +25,7 @@
 ## 1. ✅ 検査を回す
 
 ```bash
-npx --yes nbb --classpath test run_tests.cljk
+npx --yes kbb --backend sci --classpath test run_tests.cljk
 ```
 
 ```
@@ -50,7 +50,7 @@ fm seed + blueprint: all green
 ## 2. ✅ seed が書こうとしているものを、送信せずに数える
 
 ```bash
-npx --yes nbb --classpath test inspect_seed.cljk
+npx --yes kbb --backend sci --classpath test inspect_seed.cljk
 ```
 
 ```
@@ -129,7 +129,7 @@ grep -rl '"etzhayyim"[[:space:]]*:' --include=package.json orgs   # 0 件
 
 （`find` / `grep` が見るのは checkout 済みの repo だけである。west は 4,300
 超を管理しており、未 checkout の repo は `find` にも `grep` にも映らない。
-`nbb scripts/repo-search.cljs etzhayyim` も引いたが CLI を出す repo は無かった。）
+`kbb --backend sci scripts/repo-search.cljk etzhayyim` も引いたが CLI を出す repo は無かった。）
 
 **したがって §3 の解除条件は 3 つで、どれもこの repo の外にある:**
 
