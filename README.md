@@ -10,21 +10,21 @@
 | ファイル | 何か |
 |---|---|
 | `seed.ts` | 165 レコードを PDS へ書く。この repo の実質的な中身 |
-| `run_tests.cljs` | seed が書くものを固定する検査（8 tests / 25 assertions） |
-| `inspect_seed.cljs` | seed が書こうとしているものを**送信せずに**数える |
+| `run_tests.cljk` | seed が書くものを固定する検査（8 tests / 25 assertions） |
+| `inspect_seed.cljk` | seed が書こうとしているものを**送信せずに**数える |
 
 **まず [`docs/operator-quickstart.md`](docs/operator-quickstart.md) を読むこと。**
 何が今日踏めて、何が踏めないかを実測付きで書いてある。
 
 ```bash
-npx --yes nbb --classpath test run_tests.cljs      # 検査
-npx --yes nbb --classpath test inspect_seed.cljs   # 送信せずに中身を数える
+npx --yes nbb --classpath test run_tests.cljk      # 検査
+npx --yes nbb --classpath test inspect_seed.cljk   # 送信せずに中身を数える
 ```
 
 ## 何を seed するか
 
 > ⚠ **次の 2 つの箇条書きは検査が読む契約である。**
-> `test/fm/seed_test.cljs` の `bullets-under` が、この見出し行と、続く
+> `test/fm/seed_test.cljk` の `bullets-under` が、この見出し行と、続く
 > `  - ` で始まる行の **最初のバッククォート**を読んで期待値にする。
 > 期待値をテスト側に焼くと README だけが古くなっても緑のままになるので、
 > **README が正本**にしてある。見出し文と字下げを変えると検査は緑にならず、
@@ -46,7 +46,7 @@ npx --yes nbb --classpath test inspect_seed.cljs   # 送信せずに中身を数
   - `com.etzhayyim.apps.fund.investee` — 27 件
   - `com.etzhayyim.apps.fund.commitment` — 27 件
 
-計 165 レコード。件数は `inspect_seed.cljs` の実測で、collection ごとの床は
+計 165 レコード。件数は `inspect_seed.cljk` の実測で、collection ごとの床は
 検査側（`floor-per-collection`）にも入っている。
 
 実在の 4 ファンド（GPFG / Vanguard Total World / CPP Investments /
@@ -76,7 +76,7 @@ SoftBank Vision）が基線で、残りは `seed.ts` の中で 24 回まわる�
 書いていたが、それは抽出前の原本の位置で、この repo では `seed.ts` である。
 測り方と解除条件は quickstart の §3 に置いた。
 
-`inspect_seed.cljs` が在るのはこのためでもある —— `seed.ts` に dry-run が無い
+`inspect_seed.cljk` が在るのはこのためでもある —— `seed.ts` に dry-run が無い
 以上、宛先が復帰した日に「何が書かれるのか」を書く前に読む手段が要る。
 
 ## 出所
