@@ -32,7 +32,7 @@
 ;; 常に真**になる。それは「約束が守られている」ではなく「約束を読めなかった」
 ;; なので、床を切ったら throw する。捕獲側の床は seed_capture.cljs にある。
 (ns fm.seed-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [clojure.set :as set]
             [kotoba.lang.text :as str]
             [fm.seed-capture :as cap]
