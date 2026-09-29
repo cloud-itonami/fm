@@ -11,7 +11,7 @@
 ;; 本体から await されずに走り出すが、中の await は全て即解決の promise なので、
 ;; **macrotask を 1 回挟めば** microtask 待ち行列は全部掃ける。
 ;;
-;; ## 「測れなかった」を「問題なし」と区別する（superproject CLAUDE.md）
+;; ## 「測れなかった」を「問題なし」と区別する（superproject AGENTS.md）
 ;;
 ;; この形の検査の既定の失敗は、**捕まえられなかったときに黙って緑になる**こと
 ;; である。stub が入らない・import が転ける・main() が走り切る前に読む —— どれも
